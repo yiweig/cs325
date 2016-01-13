@@ -31,8 +31,19 @@ def buyLotsOfFruit(orderList):
             
     Returns cost of order
     """ 
-    totalCost = 0.0             
-    "*** YOUR CODE HERE ***"
+    totalCost = 0.0 
+
+    # iterate through order list
+    for i in range(len(orderList)):
+        order = orderList[i]
+
+        # get the fruit and the weight
+        fruit = order[0]
+        weight = order[1]
+
+        # increment total cost based on fruit and unit price
+        totalCost += fruitPrices[fruit] * weight
+
     return totalCost
     
 # Main Method    
