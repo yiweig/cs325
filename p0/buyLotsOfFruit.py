@@ -35,8 +35,7 @@ def buyLotsOfFruit(orderList):
     totalCost = 0.0 
 
     # iterate through order list
-    for i in range(len(orderList)):
-        order = orderList[i]
+    for order in orderList:
 
         # get the fruit and the weight
         fruit = order[0]
