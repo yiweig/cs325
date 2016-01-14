@@ -1,3 +1,4 @@
+# I abide by the Emory Honor Code - Yiwei Gao
 # buyLotsOfFruit.py
 # -----------------
 # Licensing Information:  You are free to use or extend these projects for 
