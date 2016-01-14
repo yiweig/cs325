@@ -1,3 +1,5 @@
+# I abide by the honor code - yiwei gao
+
 # shopSmart.py
 # ------------
 # Licensing Information:  You are free to use or extend these projects for 
@@ -28,8 +30,9 @@ def shopSmart(orderList, fruitShops):
         orderList: List of (fruit, numPound) tuples
         fruitShops: List of FruitShops
     """    
-    "*** YOUR CODE HERE ***"
-    return None
+
+    # sort the list from least to most expensive and return the first element
+    return sorted(fruitShops, key = lambda shop: shop.getPriceOfOrder(orderList))[0]
     
 if __name__ == '__main__':
   "This code runs when you invoke the script from the command line"
