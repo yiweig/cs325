@@ -32,19 +32,9 @@ def buyLotsOfFruit(orderList):
             
     Returns cost of order
     """ 
-    totalCost = 0.0 
 
-    # iterate through order list
-    for order in orderList:
-
-        # get the fruit and the weight
-        fruit = order[0]
-        weight = order[1]
-
-        # increment total cost based on fruit and unit price
-        totalCost += fruitPrices[fruit] * weight
-
-    return totalCost
+    # multiply the unit price and the amount, then sum them all
+    return sum(map(lambda order: fruitPrices[order[0]] * order[1], orderList))
     
 # Main Method    
 if __name__ == '__main__':
