@@ -96,15 +96,30 @@ def depthFirstSearch(problem):
     actions = list()
     explored = set()
     fringe = Stack()
+    # push the start state as a 3-tuple, with action=STOP and cost=0
     fringe.push((problem.getStartState(), Directions.STOP, 0))
 
+    parents = dict()
+
     while not fringe.isEmpty():
-        state = fringe.pop()
+        state_tuple = fringe.pop()
+
+        state = state_tuple[0]
+
         if state not in explored:
             explored.add(state)
+
             for successor_tuple in problem.getSuccessors(state):
-                successor_state = successor_tuple[0]
-                fringe.push(successor_state)
+                fringe.push(successor_tuple)
+                parents[successor_tuple] = state_tuple
+
+        if problem.isGoalState(state):
+            while state_tuple[1] is not Directions.STOP:
+                actions.append(state_tuple[1])
+                state_tuple = parents[state_tuple]
+            return list(reversed(actions))
+
+
 
 
 
