@@ -91,11 +91,12 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
     from util import Stack
+    from game import Directions
 
     actions = list()
     explored = set()
     fringe = Stack()
-    fringe.push(problem.getStartState())
+    fringe.push((problem.getStartState(), Directions.STOP, 0))
 
     while not fringe.isEmpty():
         state = fringe.pop()
