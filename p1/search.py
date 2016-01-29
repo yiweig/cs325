@@ -84,8 +84,8 @@ def _search(problem, data_structure):
     start_state = problem.getStartState()
     # push the start state as a 3-tuple, with action=STOP and cost=0
     fringe.push((start_state, Directions.STOP, 0))
-
-    parents = dict()
+    # map of the parent of each state
+    parent_of = dict()
 
     while not fringe.isEmpty():
         state_tuple = fringe.pop()
@@ -98,12 +98,12 @@ def _search(problem, data_structure):
             if successor_state not in explored:
                 explored.add(successor_state)
                 fringe.push(successor_tuple)
-                parents[successor_tuple] = state_tuple
+                parent_of[successor_tuple] = state_tuple
 
         if problem.isGoalState(state):
             while state_tuple[1] is not Directions.STOP:
                 actions.append(state_tuple[1])
-                state_tuple = parents[state_tuple]
+                state_tuple = parent_of[state_tuple]
             return list(reversed(actions))
 
 def depthFirstSearch(problem):
