@@ -74,6 +74,38 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s,s,w,s,w,w,s,w]
 
+
+def _search(problem, data_structure):
+    from game import Directions
+
+    actions = list()
+    explored = set()
+    fringe = data_structure
+    start_state = problem.getStartState()
+    # push the start state as a 3-tuple, with action=STOP and cost=0
+    fringe.push((start_state, Directions.STOP, 0))
+
+    parents = dict()
+
+    while not fringe.isEmpty():
+        state_tuple = fringe.pop()
+
+        state = state_tuple[0]
+        explored.add(state)
+
+        for successor_tuple in problem.getSuccessors(state):
+            successor_state = successor_tuple[0]
+            if successor_state not in explored:
+                explored.add(successor_state)
+                fringe.push(successor_tuple)
+                parents[successor_tuple] = state_tuple
+
+        if problem.isGoalState(state):
+            while state_tuple[1] is not Directions.STOP:
+                actions.append(state_tuple[1])
+                state_tuple = parents[state_tuple]
+            return list(reversed(actions))
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first
@@ -91,47 +123,16 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
     from util import Stack
-    from game import Directions
-
-    actions = list()
-    explored = set()
-    fringe = Stack()
-    # push the start state as a 3-tuple, with action=STOP and cost=0
-    fringe.push((problem.getStartState(), Directions.STOP, 0))
-
-    parents = dict()
-
-    while not fringe.isEmpty():
-        state_tuple = fringe.pop()
-
-        state = state_tuple[0]
-
-        if state not in explored:
-            explored.add(state)
-
-            for successor_tuple in problem.getSuccessors(state):
-                fringe.push(successor_tuple)
-                parents[successor_tuple] = state_tuple
-
-        if problem.isGoalState(state):
-            while state_tuple[1] is not Directions.STOP:
-                actions.append(state_tuple[1])
-                state_tuple = parents[state_tuple]
-            return list(reversed(actions))
-
-
-
-
-
-
-
+    return _search(problem, Stack())
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+    from util import Queue
+    return _search(problem, Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
