@@ -91,20 +91,19 @@ def _search(problem, data_structure):
         state_tuple = fringe.pop()
 
         state = state_tuple[0]
-        explored.add(state)
+        if state not in explored:
+            explored.add(state)
 
-        for successor_tuple in problem.getSuccessors(state):
-            successor_state = successor_tuple[0]
-            if successor_state not in explored:
-                explored.add(successor_state)
+            if problem.isGoalState(state):
+                while state_tuple[1] is not Directions.STOP:
+                    actions.append(state_tuple[1])
+                    state_tuple = parent_of[state_tuple]
+                return list(reversed(actions))
+
+            for successor_tuple in problem.getSuccessors(state):
                 fringe.push(successor_tuple)
                 parent_of[successor_tuple] = state_tuple
 
-        if problem.isGoalState(state):
-            while state_tuple[1] is not Directions.STOP:
-                actions.append(state_tuple[1])
-                state_tuple = parent_of[state_tuple]
-            return list(reversed(actions))
 
 def depthFirstSearch(problem):
     """
