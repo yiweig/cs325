@@ -90,8 +90,7 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
-    from util import Stack
-    return _search(problem, Stack())
+    return _search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
@@ -99,8 +98,7 @@ def breadthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
-    from util import Queue
-    return _search(problem, Queue())
+    return _search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
@@ -125,6 +123,7 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+
 
 def _search(problem, problem_fringe):
     from game import Directions
