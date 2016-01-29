@@ -150,14 +150,14 @@ def _search(problem, problem_fringe):
     while not fringe.isEmpty():
         current_tuple = fringe.pop()
 
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple[action] is not Directions.STOP:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
         if current_tuple[state] not in explored_states:
             explored_states.add(current_tuple[state])
-
-            if problem.isGoalState(current_tuple[state]):
-                while current_tuple[action] is not Directions.STOP:
-                    actions.append(current_tuple[action])
-                    current_tuple = parent_of[current_tuple]
-                return list(reversed(actions))
 
             for successor_tuple in problem.getSuccessors(current_tuple[state]):
                 if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
