@@ -19,6 +19,8 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from game import Directions
+
 
 class SearchProblem:
     """
@@ -89,21 +91,22 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _search(problem, util.Stack())
+    util.raiseNotDefined()
+    # return _search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _search(problem, util.Queue())
+    util.raiseNotDefined()
+    # return _search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+    return _search(problem, util.PriorityQueue())
 
 def nullHeuristic(state, problem=None):
     """
@@ -126,30 +129,39 @@ ucs = uniformCostSearch
 
 
 def _search(problem, problem_fringe):
-    from game import Directions
 
     actions = list()
     explored_states = set()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost):
+    (state, action, cost) = 0, 1, 2
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+
     fringe = problem_fringe
-    start_state = problem.getStartState()
-    # push the start state as a 3-tuple (x, y, z):
-    # (x = state, y = action, z = cost)
-    fringe.push((start_state, Directions.STOP, 0))
+    if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
+        fringe.push(start_state_tuple)
+    elif isinstance(fringe, util.PriorityQueue):
+        fringe.push(start_state_tuple, start_state_tuple[cost])
+
     # map of the parent of each state
     parent_of = dict()
 
     while not fringe.isEmpty():
-        state_tuple = fringe.pop()
+        current_tuple = fringe.pop()
 
-        if state_tuple[0] not in explored_states:
-            explored_states.add(state_tuple[0])
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple[action] is not Directions.STOP:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
 
-            if problem.isGoalState(state_tuple[0]):
-                while state_tuple[1] is not Directions.STOP:
-                    actions.append(state_tuple[1])
-                    state_tuple = parent_of[state_tuple]
-                return list(reversed(actions))
+        if current_tuple[state] not in explored_states:
+            explored_states.add(current_tuple[state])
 
-            for successor_tuple in problem.getSuccessors(state_tuple[0]):
-                fringe.push(successor_tuple)
-                parent_of[successor_tuple] = state_tuple
+            for successor_tuple in problem.getSuccessors(current_tuple[state]):
+                if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
+                    fringe.push(successor_tuple)
+                elif isinstance(fringe, util.PriorityQueue) and successor_tuple[state] not in explored_states:
+                    fringe.push(successor_tuple, successor_tuple[cost])
+                parent_of[successor_tuple] = current_tuple
