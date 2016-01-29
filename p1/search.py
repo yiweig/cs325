@@ -91,16 +91,16 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _search(problem, util.Stack())
+    util.raiseNotDefined()
+    # return _search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _search(problem, util.Queue())
+    util.raiseNotDefined()
+    # return _search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
@@ -162,6 +162,6 @@ def _search(problem, problem_fringe):
             for successor_tuple in problem.getSuccessors(current_tuple[state]):
                 if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
                     fringe.push(successor_tuple)
-                elif isinstance(fringe, util.PriorityQueue):
+                elif isinstance(fringe, util.PriorityQueue) and successor_tuple[state] not in explored_states:
                     fringe.push(successor_tuple, successor_tuple[cost])
                 parent_of[successor_tuple] = current_tuple
