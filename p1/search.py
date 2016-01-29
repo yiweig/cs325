@@ -74,37 +74,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s,s,w,s,w,w,s,w]
 
-
-def _search(problem, problem_fringe):
-    from game import Directions
-
-    actions = list()
-    explored_states = set()
-    fringe = problem_fringe
-    start_state = problem.getStartState()
-    # push the start state as a 3-tuple (x, y, z):
-    # (x = state, y = action, z = cost)
-    fringe.push((start_state, Directions.STOP, 0))
-    # map of the parent of each state
-    parent_of = dict()
-
-    while not fringe.isEmpty():
-        state_tuple = fringe.pop()
-
-        if state_tuple[0] not in explored_states:
-            explored_states.add(state_tuple[0])
-
-            if problem.isGoalState(state_tuple[0]):
-                while state_tuple[1] is not Directions.STOP:
-                    actions.append(state_tuple[1])
-                    state_tuple = parent_of[state_tuple]
-                return list(reversed(actions))
-
-            for successor_tuple in problem.getSuccessors(state_tuple[0]):
-                fringe.push(successor_tuple)
-                parent_of[successor_tuple] = state_tuple
-
-
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first
@@ -156,3 +125,32 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+
+def _search(problem, problem_fringe):
+    from game import Directions
+
+    actions = list()
+    explored_states = set()
+    fringe = problem_fringe
+    start_state = problem.getStartState()
+    # push the start state as a 3-tuple (x, y, z):
+    # (x = state, y = action, z = cost)
+    fringe.push((start_state, Directions.STOP, 0))
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        state_tuple = fringe.pop()
+
+        if state_tuple[0] not in explored_states:
+            explored_states.add(state_tuple[0])
+
+            if problem.isGoalState(state_tuple[0]):
+                while state_tuple[1] is not Directions.STOP:
+                    actions.append(state_tuple[1])
+                    state_tuple = parent_of[state_tuple]
+                return list(reversed(actions))
+
+            for successor_tuple in problem.getSuccessors(state_tuple[0]):
+                fringe.push(successor_tuple)
+                parent_of[successor_tuple] = state_tuple
