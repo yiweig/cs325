@@ -92,7 +92,7 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-    # return _search(problem, util.Stack())
+    # return _breadth_or_depth_search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
@@ -100,13 +100,13 @@ def breadthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-    # return _search(problem, util.Queue())
+    # return _breadth_or_depth_search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
-    return _search(problem, util.PriorityQueue())
+    return _uniform_cost_search(problem)
 
 def nullHeuristic(state, problem=None):
     """
@@ -128,8 +128,7 @@ astar = aStarSearch
 ucs = uniformCostSearch
 
 
-def _search(problem, problem_fringe):
-
+def _breadth_or_depth_search(problem, problem_fringe):
     actions = list()
     explored_states = set()
 
@@ -139,10 +138,7 @@ def _search(problem, problem_fringe):
     start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
 
     fringe = problem_fringe
-    if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
-        fringe.push(start_state_tuple)
-    elif isinstance(fringe, util.PriorityQueue):
-        fringe.push(start_state_tuple, start_state_tuple[cost])
+    fringe.push(start_state_tuple)
 
     # map of the parent of each state
     parent_of = dict()
@@ -160,8 +156,40 @@ def _search(problem, problem_fringe):
             explored_states.add(current_tuple[state])
 
             for successor_tuple in problem.getSuccessors(current_tuple[state]):
-                if isinstance(fringe, util.Stack) or isinstance(fringe, util.Queue):
-                    fringe.push(successor_tuple)
-                elif isinstance(fringe, util.PriorityQueue) and successor_tuple[state] not in explored_states:
-                    fringe.push(successor_tuple, successor_tuple[cost])
+                fringe.push(successor_tuple)
                 parent_of[successor_tuple] = current_tuple
+
+
+def _uniform_cost_search(problem):
+    actions = list()
+    explored_states = set()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost):
+    (state, action, cost) = 0, 1, 2
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+
+    fringe = util.PriorityQueue()
+    fringe.push(start_state_tuple, start_state_tuple[cost])
+
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple[action] is not Directions.STOP:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
+        explored_states.add(current_tuple[state])
+
+        for successor_tuple in problem.getSuccessors(current_tuple[state]):
+            parent_of[successor_tuple] = current_tuple
+            if successor_tuple[state] not in explored_states:
+                fringe.push(successor_tuple, successor_tuple[cost])
+
+    return None
+
