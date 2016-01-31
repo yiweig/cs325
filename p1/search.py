@@ -169,8 +169,8 @@ def _uniform_cost_search(problem):
     (state, action, cost) = 0, 1, 2
     start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
 
-    fringe = util.PriorityQueue()
-    fringe.push(start_state_tuple, start_state_tuple[cost])
+    fringe = util.PriorityQueueWithFunction(_priority_function)
+    fringe.push(start_state_tuple)
 
     # map of the parent of each state
     parent_of = dict()
@@ -184,12 +184,17 @@ def _uniform_cost_search(problem):
                 current_tuple = parent_of[current_tuple]
             return list(reversed(actions))
 
-        explored_states.add(current_tuple[state])
+        if current_tuple[state] not in explored_states:
+            explored_states.add(current_tuple[state])
 
-        for successor_tuple in problem.getSuccessors(current_tuple[state]):
-            parent_of[successor_tuple] = current_tuple
-            if successor_tuple[state] not in explored_states:
-                fringe.push(successor_tuple, successor_tuple[cost])
+            for successor_tuple in problem.getSuccessors(current_tuple[state]):
+                parent_of[successor_tuple] = current_tuple
+                if successor_tuple[state] not in explored_states:
+                    fringe.push(successor_tuple)
 
     return None
 
+
+def _priority_function(state_tuple):
+    cost = 2
+    return state_tuple[cost]
