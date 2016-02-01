@@ -179,7 +179,7 @@ def _uniform_cost_search(problem):
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple[action] is not Directions.STOP:
+            while current_tuple != start_state_tuple:
                 actions.append(current_tuple[action])
                 current_tuple = parent_of[current_tuple]
             return list(reversed(actions))
@@ -188,8 +188,8 @@ def _uniform_cost_search(problem):
             explored_states.add(current_tuple[state])
 
             for successor_tuple in problem.getSuccessors(current_tuple[state]):
-                parent_of[successor_tuple] = current_tuple
                 if successor_tuple[state] not in explored_states:
+                    parent_of[successor_tuple] = current_tuple
                     fringe.push(successor_tuple)
 
     return None
