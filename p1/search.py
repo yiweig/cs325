@@ -19,6 +19,8 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from game import Directions
+
 
 class SearchProblem:
     """
@@ -89,19 +91,22 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    # util.raiseNotDefined()
+    return _breadth_or_depth_search(problem, util.Stack())
+9
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+    return _breadth_or_depth_search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+    return _uniform_cost_search(problem)
 
 def nullHeuristic(state, problem=None):
     """
@@ -113,11 +118,134 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    # util.raiseNotDefined()
+    return _a_star_search(problem, heuristic)
 
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+
+# Define some indices for accessing our tuples
+(state, action, cost) = 0, 1, 2
+
+
+def _cost_function(state_tuple):
+    return state_tuple[cost]
+
+
+def _breadth_or_depth_search(problem, problem_fringe):
+    actions = list()
+    explored_states = set()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost):
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+
+    fringe = problem_fringe
+    fringe.push(start_state_tuple)
+
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple != start_state_tuple:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
+        if current_tuple[state] not in explored_states:
+            explored_states.add(current_tuple[state])
+
+            for successor_tuple in problem.getSuccessors(current_tuple[state]):
+                fringe.push(successor_tuple)
+                parent_of[successor_tuple] = current_tuple
+
+    return None
+
+
+def _uniform_cost_search(problem):
+    actions = list()
+    explored_states = set()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost):
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+
+    fringe = util.PriorityQueueWithFunction(_cost_function)
+    fringe.push(start_state_tuple)
+
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple != start_state_tuple:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
+        if current_tuple[state] not in explored_states:
+            explored_states.add(current_tuple[state])
+
+            for successor_tuple in problem.getSuccessors(current_tuple[state]):
+                if successor_tuple[state] not in explored_states:
+                    cumulative_cost = successor_tuple[cost] + current_tuple[cost]
+                    new_successor_tuple = successor_tuple[:-action] + (cumulative_cost,)
+                    fringe.push(new_successor_tuple)
+                    parent_of[new_successor_tuple] = current_tuple
+
+    return None
+
+
+def _a_star_search(problem, heuristic):
+    explored_states = set()
+    # map of the parent of each state
+    parent_of = dict()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost)
+    # and push into fringe:
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+    fringe = BetterPriorityQueue()
+
+    cost_so_far = dict()
+    cost_so_far[start_state_tuple[state]] = 0
+
+    fringe.push(start_state_tuple, start_state_tuple[cost])
+
+    actions = list()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple[action] != Directions.STOP:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
+        for successor_tuple in problem.getSuccessors(current_tuple[state]):
+            new_cost = cost_so_far[current_tuple[state]] + successor_tuple[cost]
+            if successor_tuple[state] not in cost_so_far or new_cost < cost_so_far[successor_tuple[state]]:
+                cost_so_far[successor_tuple[state]] = new_cost
+                priority = new_cost + heuristic(successor_tuple[state], problem)
+                fringe.push(successor_tuple, priority)
+                parent_of[successor_tuple] = current_tuple
+
+    return None
+
+
+class BetterPriorityQueue(util.PriorityQueue):
+    def contains(self, state_tuple):
+        for x in self.heap:
+            if x == state_tuple:
+                return True
+
+        return False
