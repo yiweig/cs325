@@ -91,22 +91,22 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _breadth_or_depth_search(problem, util.Stack())
+    util.raiseNotDefined()
+    # return _breadth_or_depth_search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _breadth_or_depth_search(problem, util.Queue())
+    util.raiseNotDefined()
+    # return _breadth_or_depth_search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    return _uniform_cost_search(problem)
+    util.raiseNotDefined()
+    # return _uniform_cost_search(problem)
 
 def nullHeuristic(state, problem=None):
     """
@@ -118,8 +118,8 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    # util.raiseNotDefined()
+    return _a_star_search(problem, heuristic)
 
 # Abbreviations
 bfs = breadthFirstSearch
@@ -149,7 +149,7 @@ def _breadth_or_depth_search(problem, problem_fringe):
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple[action] is not Directions.STOP:
+            while current_tuple != start_state_tuple:
                 actions.append(current_tuple[action])
                 current_tuple = parent_of[current_tuple]
             return list(reversed(actions))
@@ -198,3 +198,43 @@ def _uniform_cost_search(problem):
                     parent_of[new_successor_tuple] = current_tuple
 
     return None
+
+
+def _a_star_search(problem, heuristic):
+    actions = list()
+    explored_states = set()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost):
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+
+    fringe = util.PriorityQueue()
+    fringe.push(start_state_tuple, start_state_tuple[cost])
+
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            while current_tuple != start_state_tuple:
+                actions.append(current_tuple[action])
+                current_tuple = parent_of[current_tuple]
+            return list(reversed(actions))
+
+        if current_tuple[state] not in explored_states:
+            explored_states.add(current_tuple[state])
+
+            for successor_tuple in problem.getSuccessors(current_tuple[state]):
+                if successor_tuple[state] not in explored_states:
+                    g_score = current_tuple[cost] + successor_tuple[cost]
+                    h_score = heuristic(successor_tuple[state], problem)
+
+                    f_score = g_score + h_score
+
+                    new_successor_tuple = successor_tuple[:-action] + (f_score,)
+                    fringe.push(new_successor_tuple, new_successor_tuple[cost])
+                    parent_of[new_successor_tuple] = current_tuple
+
+
