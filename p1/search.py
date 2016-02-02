@@ -91,22 +91,22 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    # return _breadth_or_depth_search(problem, util.Stack())
-
+    # util.raiseNotDefined()
+    return _breadth_or_depth_search(problem, util.Stack())
+9
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    # return _breadth_or_depth_search(problem, util.Queue())
+    # util.raiseNotDefined()
+    return _breadth_or_depth_search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    # return _uniform_cost_search(problem)
+    # util.raiseNotDefined()
+    return _uniform_cost_search(problem)
 
 def nullHeuristic(state, problem=None):
     """
