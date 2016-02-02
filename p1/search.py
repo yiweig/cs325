@@ -135,8 +135,15 @@ def _cost_function(state_tuple):
     return state_tuple[cost]
 
 
-def _breadth_or_depth_search(problem, problem_fringe):
+def _build_path(state_tuple, parent_of):
     actions = list()
+    while state_tuple[action] != Directions.STOP:
+        actions.append(state_tuple[action])
+        state_tuple = parent_of[state_tuple]
+    return list(reversed(actions))
+
+
+def _breadth_or_depth_search(problem, problem_fringe):
     explored_states = set()
 
     # convert the start state into a
@@ -153,10 +160,7 @@ def _breadth_or_depth_search(problem, problem_fringe):
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple != start_state_tuple:
-                actions.append(current_tuple[action])
-                current_tuple = parent_of[current_tuple]
-            return list(reversed(actions))
+            return _build_path(current_tuple, parent_of)
 
         if current_tuple[state] not in explored_states:
             explored_states.add(current_tuple[state])
@@ -169,7 +173,6 @@ def _breadth_or_depth_search(problem, problem_fringe):
 
 
 def _uniform_cost_search(problem):
-    actions = list()
     explored_states = set()
 
     # convert the start state into a
@@ -186,10 +189,7 @@ def _uniform_cost_search(problem):
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple != start_state_tuple:
-                actions.append(current_tuple[action])
-                current_tuple = parent_of[current_tuple]
-            return list(reversed(actions))
+            return _build_path(current_tuple, parent_of)
 
         if current_tuple[state] not in explored_states:
             explored_states.add(current_tuple[state])
@@ -220,16 +220,11 @@ def _a_star_search(problem, heuristic):
 
     fringe.push(start_state_tuple, start_state_tuple[cost])
 
-    actions = list()
-
     while not fringe.isEmpty():
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple[action] != Directions.STOP:
-                actions.append(current_tuple[action])
-                current_tuple = parent_of[current_tuple]
-            return list(reversed(actions))
+            return _build_path(current_tuple, parent_of)
 
         for successor_tuple in problem.getSuccessors(current_tuple[state]):
             new_cost = cost_so_far[current_tuple[state]] + successor_tuple[cost]
