@@ -205,38 +205,47 @@ def _uniform_cost_search(problem):
 
 
 def _a_star_search(problem, heuristic):
-    actions = list()
     explored_states = set()
-
-    # convert the start state into a
-    # 3-tuple (state, action, cost):
-    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
-
-    fringe = util.PriorityQueueWithFunction(_cost_function)
-    fringe.push(start_state_tuple)
-
     # map of the parent of each state
     parent_of = dict()
+
+    # convert the start state into a
+    # 3-tuple (state, action, cost)
+    # and push into fringe:
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+    fringe = BetterPriorityQueue()
+
+    cost_so_far = dict()
+    cost_so_far[start_state_tuple[state]] = 0
+
+    fringe.push(start_state_tuple, start_state_tuple[cost])
+
+    actions = list()
 
     while not fringe.isEmpty():
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            while current_tuple != start_state_tuple:
+            while current_tuple[action] != Directions.STOP:
                 actions.append(current_tuple[action])
                 current_tuple = parent_of[current_tuple]
             return list(reversed(actions))
 
-        if current_tuple[state] not in explored_states:
-            explored_states.add(current_tuple[state])
+        for successor_tuple in problem.getSuccessors(current_tuple[state]):
+            new_cost = cost_so_far[current_tuple[state]] + successor_tuple[cost]
+            if successor_tuple[state] not in cost_so_far or new_cost < cost_so_far[successor_tuple[state]]:
+                cost_so_far[successor_tuple[state]] = new_cost
+                priority = new_cost + heuristic(successor_tuple[state], problem)
+                fringe.push(successor_tuple, priority)
+                parent_of[successor_tuple] = current_tuple
 
-            for successor_tuple in problem.getSuccessors(current_tuple[state]):
-                if successor_tuple[state] not in explored_states:
-                    g_score = current_tuple[cost] + successor_tuple[cost]
-                    h_score = heuristic(successor_tuple[state], problem)
+    return None
 
-                    f_score = g_score + h_score
 
-                    new_successor_tuple = successor_tuple[:-action] + (f_score,)
-                    fringe.push(new_successor_tuple)
-                    parent_of[new_successor_tuple] = current_tuple
+class BetterPriorityQueue(util.PriorityQueue):
+    def contains(self, state_tuple):
+        for x in self.heap:
+            if x == state_tuple:
+                return True
+
+        return False
