@@ -213,7 +213,7 @@ def _a_star_search(problem, heuristic):
     # 3-tuple (state, action, cost)
     # and push into fringe:
     start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
-    fringe = BetterPriorityQueue()
+    fringe = util.PriorityQueue()
 
     cost_so_far = dict()
     cost_so_far[start_state_tuple[state]] = 0
@@ -240,12 +240,3 @@ def _a_star_search(problem, heuristic):
                 parent_of[successor_tuple] = current_tuple
 
     return None
-
-
-class BetterPriorityQueue(util.PriorityQueue):
-    def contains(self, state_tuple):
-        for x in self.heap:
-            if x == state_tuple:
-                return True
-
-        return False
