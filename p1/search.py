@@ -131,6 +131,10 @@ ucs = uniformCostSearch
 (state, action, cost) = 0, 1, 2
 
 
+def _cost_function(state_tuple):
+    return state_tuple[cost]
+
+
 def _breadth_or_depth_search(problem, problem_fringe):
     actions = list()
     explored_states = set()
@@ -172,8 +176,8 @@ def _uniform_cost_search(problem):
     # 3-tuple (state, action, cost):
     start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
 
-    fringe = util.PriorityQueue()
-    fringe.push(start_state_tuple, start_state_tuple[cost])
+    fringe = util.PriorityQueueWithFunction(_cost_function)
+    fringe.push(start_state_tuple)
 
     # map of the parent of each state
     parent_of = dict()
@@ -194,7 +198,7 @@ def _uniform_cost_search(problem):
                 if successor_tuple[state] not in explored_states:
                     cumulative_cost = successor_tuple[cost] + current_tuple[cost]
                     new_successor_tuple = successor_tuple[:-action] + (cumulative_cost,)
-                    fringe.push(new_successor_tuple, new_successor_tuple[cost])
+                    fringe.push(new_successor_tuple)
                     parent_of[new_successor_tuple] = current_tuple
 
     return None
@@ -208,8 +212,8 @@ def _a_star_search(problem, heuristic):
     # 3-tuple (state, action, cost):
     start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
 
-    fringe = util.PriorityQueue()
-    fringe.push(start_state_tuple, start_state_tuple[cost])
+    fringe = util.PriorityQueueWithFunction(_cost_function)
+    fringe.push(start_state_tuple)
 
     # map of the parent of each state
     parent_of = dict()
@@ -234,7 +238,5 @@ def _a_star_search(problem, heuristic):
                     f_score = g_score + h_score
 
                     new_successor_tuple = successor_tuple[:-action] + (f_score,)
-                    fringe.push(new_successor_tuple, new_successor_tuple[cost])
+                    fringe.push(new_successor_tuple)
                     parent_of[new_successor_tuple] = current_tuple
-
-
