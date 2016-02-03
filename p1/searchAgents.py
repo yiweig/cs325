@@ -321,11 +321,11 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             x, y = state
-            dx, dy = Actions.directionToVector(action)
+            dx, dy = vector = Actions.directionToVector(action)
 
-            new_x, new_y = int(x + dx), int(y + dy)
+            new_x, new_y = new_state = int(x + dx), int(y + dy)
             if not self.walls[new_x][new_y]:
-                successors.append(((new_x, new_y), Actions.vectorToDirection((dx, dy)), cost))
+                successors.append((new_state, Actions.vectorToDirection(vector), cost))
 
         self._expanded += 1
         return successors
