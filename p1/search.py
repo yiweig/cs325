@@ -90,22 +90,16 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
     return _breadth_or_depth_search(problem, util.Stack())
 9
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
     return _breadth_or_depth_search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
     return _uniform_cost_search(problem)
 
 def nullHeuristic(state, problem=None):
@@ -117,8 +111,6 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
     return _a_star_search(problem, heuristic)
 
 # Abbreviations
