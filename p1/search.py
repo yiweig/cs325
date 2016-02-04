@@ -149,10 +149,12 @@ def _breadth_or_depth_search(problem, problem_fringe):
     parent_of = dict()
 
     while not fringe.isEmpty():
+        print len(fringe.list)
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            return _build_path(current_tuple, parent_of)
+            path = _build_path(current_tuple, parent_of)
+            return path
 
         if current_tuple[state] not in explored_states:
             explored_states.add(current_tuple[state])

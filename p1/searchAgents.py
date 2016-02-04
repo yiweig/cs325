@@ -262,6 +262,31 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
+class CornersProblemState:
+    def __init__(self, pacman_position, has_food):
+        self.pacman_position = pacman_position
+        self.has_food = has_food
+
+    def is_goal(self):
+        return self.pacman_position in self.has_food.keys() and not any(self.has_food.values())
+
+    def move_to(self, new_position):
+        self.pacman_position = new_position
+        if self.pacman_position in self.has_food.keys():
+            self.has_food[self.pacman_position] = False
+
+    def __hash__(self):
+        return hash(self.pacman_position) + hash(frozenset(sorted(self.has_food.items())))
+
+    def __eq__(self, other):
+        return isinstance(self, other.__class__) and \
+               self.pacman_position == other.pacman_position and \
+               self.has_food == other.has_food
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
 
 class CornersProblem(search.SearchProblem):
     """
@@ -278,9 +303,13 @@ class CornersProblem(search.SearchProblem):
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        self.has_food = dict()
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
+                self.has_food[corner] = False
+            else:
+                self.has_food[corner] = True
         self._expanded = 0 # Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
@@ -290,13 +319,13 @@ class CornersProblem(search.SearchProblem):
         "Returns the start state (in your state space, not the full Pacman state space)"
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        return self.startingPosition
+        return CornersProblemState(self.startingPosition, self.has_food)
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        return state in self.corners
+        return state.is_goal()
 
     def getSuccessors(self, state):
         """
@@ -320,12 +349,14 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            x, y = state
+            x, y = state.pacman_position
             dx, dy = vector = Actions.directionToVector(action)
 
-            new_x, new_y = new_state = int(x + dx), int(y + dy)
+            new_x, new_y = new_position = int(x + dx), int(y + dy)
             if not self.walls[new_x][new_y]:
-                successors.append((new_state, Actions.vectorToDirection(vector), cost))
+                successor = CornersProblemState(state.pacman_position, state.has_food)
+                successor.move_to(new_position)
+                successors.append((successor, Actions.vectorToDirection(vector), cost))
 
         self._expanded += 1
         return successors
