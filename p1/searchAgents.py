@@ -401,8 +401,9 @@ def cornersHeuristic(state, problem):
 def _euclidean_distance(pacman_position, has_food):
     px, py = pacman_position
     distances = list()
-    for fx, fy in has_food:
-        if has_food[(fx, fy)]:
+    for position, value in has_food.iteritems():
+        if has_food[position]:
+            fx, fy = position
             distances.append((((px - fx) ** 2) + ((py - fy) ** 2)) ** 0.5)
     if len(distances) == 0:
         return 0
@@ -497,7 +498,11 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    food_locations = dict()
+    for position in foodGrid.asList():
+        food_locations[position] = True
+    # return _euclidean_distance(position, food_locations)
+    return foodGrid.count()
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
