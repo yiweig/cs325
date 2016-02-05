@@ -403,10 +403,10 @@ def _euclidean_distance(pacman_position, has_food):
     distances = list()
     for fx, fy in has_food:
         if has_food[(fx, fy)]:
-            distances.append((((px - fx) ** 2 + (py - fy) ** 2) ** 0.5))
+            distances.append((((px - fx) ** 2) + ((py - fy) ** 2)) ** 0.5)
     if len(distances) == 0:
         return 0
-    return min(distances)
+    return max(distances)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
