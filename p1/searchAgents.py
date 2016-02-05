@@ -271,7 +271,6 @@ class CornersProblemState:
         self.has_food = copy.deepcopy(has_food)
         if self.pacman_position in self.has_food.keys():
             self.has_food[self.pacman_position] = False
-        self.remaining_count = sum(self.has_food.values())
 
     def is_goal(self):
         return not any(self.has_food.values())
@@ -319,7 +318,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.food_eaten = 0
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
@@ -359,8 +357,8 @@ class CornersProblem(search.SearchProblem):
             new_x, new_y = new_position = int(x + dx), int(y + dy)
 
             if not self.walls[new_x][new_y]:
-                successor = CornersProblemState(new_position, state.has_food)
-                successors.append((successor, Actions.vectorToDirection(vector), cost))
+                successors.append(
+                    (CornersProblemState(new_position, state.has_food), Actions.vectorToDirection(vector), cost))
 
         self._expanded += 1
         return successors
@@ -397,6 +395,7 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
     return _euclidean_distance(state.pacman_position, state.has_food)
+
 
 def _euclidean_distance(pacman_position, has_food):
     position, distance = 0, 1

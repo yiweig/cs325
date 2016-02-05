@@ -127,6 +127,8 @@ def _cost_function(state_tuple):
     return state_tuple[cost]
 
 
+# two functions for tracing out the path because I was lazy
+# and used two different ways to keep track of parent nodes
 def _build_path(state_tuple, parent_of):
     actions = list()
     while state_tuple[action] != Directions.STOP:
@@ -134,12 +136,12 @@ def _build_path(state_tuple, parent_of):
         state_tuple = parent_of[state_tuple]
     return list(reversed(actions))
 
+
 def _find_path(state_tuple):
     actions = list()
     while state_tuple[parent] is not None:
         actions.append(state_tuple[action])
         state_tuple = state_tuple[parent]
-    # print 'about to return'
     return list(reversed(actions))
 
 
@@ -239,7 +241,6 @@ def _uniform_cost_search(problem):
 
 
 def _a_star_search(problem, heuristic):
-    explored_states = set()
     # map of the parent of each state
     parent_of = dict()
 
