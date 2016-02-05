@@ -90,13 +90,13 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    return _breadth_or_depth_search(problem, util.Stack())
+    return _depth_first_search(problem)
 9
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    return _breadth_or_depth_search(problem, util.Queue())
+    return _breadth_first_search(problem)
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
@@ -120,7 +120,7 @@ astar = aStarSearch
 ucs = uniformCostSearch
 
 # Define some indices for accessing our tuples
-(state, action, cost) = 0, 1, 2
+(state, action, cost, parent) = 0, 1, 2, 3
 
 
 def _cost_function(state_tuple):
@@ -134,34 +134,74 @@ def _build_path(state_tuple, parent_of):
         state_tuple = parent_of[state_tuple]
     return list(reversed(actions))
 
+def _find_path(state_tuple):
+    actions = list()
+    while state_tuple[parent] is not None:
+        actions.append(state_tuple[action])
+        state_tuple = state_tuple[parent]
+    # print 'about to return'
+    return list(reversed(actions))
 
-def _breadth_or_depth_search(problem, problem_fringe):
+
+def _depth_first_search(problem):
     explored_states = set()
 
     # convert the start state into a
-    # 3-tuple (state, action, cost):
-    start_state_tuple = (problem.getStartState(), Directions.STOP, 0)
+    # 4-tuple (state, action, cost, parent):
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0, None)
 
-    fringe = problem_fringe
+    fringe = util.Stack()
     fringe.push(start_state_tuple)
 
     # map of the parent of each state
     parent_of = dict()
 
     while not fringe.isEmpty():
-        print len(fringe.list)
         current_tuple = fringe.pop()
 
         if problem.isGoalState(current_tuple[state]):
-            path = _build_path(current_tuple, parent_of)
+            path = _find_path(current_tuple)
             return path
 
         if current_tuple[state] not in explored_states:
             explored_states.add(current_tuple[state])
 
             for successor_tuple in problem.getSuccessors(current_tuple[state]):
-                fringe.push(successor_tuple)
                 parent_of[successor_tuple] = current_tuple
+                successor_tuple = successor_tuple + (current_tuple,)
+                fringe.push(successor_tuple)
+
+    return None
+
+
+def _breadth_first_search(problem):
+    explored_states = set()
+
+    # convert the start state into a
+    # 4-tuple (state, action, cost, parent):
+    start_state_tuple = (problem.getStartState(), Directions.STOP, 0, None)
+
+    fringe = util.Queue()
+    fringe.push(start_state_tuple)
+
+    explored_states.add(start_state_tuple[state])
+
+    # map of the parent of each state
+    parent_of = dict()
+
+    while not fringe.isEmpty():
+        current_tuple = fringe.pop()
+
+        if problem.isGoalState(current_tuple[state]):
+            path = _find_path(current_tuple)
+            return path
+
+        for successor_tuple in problem.getSuccessors(current_tuple[state]):
+            if successor_tuple[state] not in explored_states:
+                explored_states.add(successor_tuple[state])
+                parent_of[successor_tuple] = current_tuple
+                successor_tuple = successor_tuple + (current_tuple,)
+                fringe.push(successor_tuple)
 
     return None
 

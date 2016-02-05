@@ -264,11 +264,12 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 class CornersProblemState:
     def __init__(self, pacman_position, has_food):
+        import copy
         self.pacman_position = pacman_position
-        self.has_food = has_food
+        self.has_food = copy.deepcopy(has_food)
 
     def is_goal(self):
-        return self.pacman_position in self.has_food.keys() and not any(self.has_food.values())
+        return not any(self.has_food.values())
 
     def move_to(self, new_position):
         self.pacman_position = new_position
@@ -276,16 +277,20 @@ class CornersProblemState:
             self.has_food[self.pacman_position] = False
 
     def __hash__(self):
-        return hash(self.pacman_position) + hash(frozenset(sorted(self.has_food.items())))
+        items = self.has_food.items()
+        items.append(self.pacman_position)
+
+        return hash(frozenset(sorted(items)))
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return isinstance(self, other.__class__) and \
                self.pacman_position == other.pacman_position and \
                self.has_food == other.has_food
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
 
 
 class CornersProblem(search.SearchProblem):
@@ -314,6 +319,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.food_eaten = 0
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
@@ -325,6 +331,7 @@ class CornersProblem(search.SearchProblem):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
+        # return self.food_eaten >= 4 and not any(self.has_food.values())
         return state.is_goal()
 
     def getSuccessors(self, state):
@@ -339,20 +346,25 @@ class CornersProblem(search.SearchProblem):
          cost of expanding to that successor
         """
 
+        # if state.pacman_position in state.has_food.keys():
+        #     state.has_food[state.pacman_position] = False
+        #     self.food_eaten += 1
+
         successors = []
         cost = 1.0
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            #   hitsWall = self.walls[nextx][nexty]
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
             #   x,y = currentPosition
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
 
             x, y = state.pacman_position
             dx, dy = vector = Actions.directionToVector(action)
 
             new_x, new_y = new_position = int(x + dx), int(y + dy)
+
             if not self.walls[new_x][new_y]:
                 successor = CornersProblemState(state.pacman_position, state.has_food)
                 successor.move_to(new_position)
