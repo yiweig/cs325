@@ -399,15 +399,32 @@ def cornersHeuristic(state, problem):
     return _euclidean_distance(state.pacman_position, state.has_food)
 
 def _euclidean_distance(pacman_position, has_food):
-    px, py = pacman_position
-    distances = list()
-    for position, value in has_food.iteritems():
-        if has_food[position]:
-            fx, fy = position
-            distances.append((((px - fx) ** 2) + ((py - fy) ** 2)) ** 0.5)
-    if len(distances) == 0:
+    position, distance = 0, 1
+    first_distances = dict()
+    for food_position in has_food:
+        if has_food[food_position]:
+            first_distances[food_position] = _distance(pacman_position, food_position)
+    if not first_distances:
         return 0
-    return max(distances)
+    sorted_distances = sorted(first_distances.items(), key=lambda item: item[distance])
+    closest = sorted_distances[position]
+    del sorted_distances[position]
+
+    second_distances = list()
+
+    for food_position in has_food:
+        if has_food[food_position] and food_position != closest[position]:
+            second_distances.append(_distance(closest[position], food_position))
+    if not second_distances:
+        return closest[distance]
+
+    return closest[distance] + min(second_distances)
+
+
+def _distance(start, end):
+    x_postion, y_position = 0, 1
+    return (((start[x_postion] - end[x_postion]) ** 2) +
+            ((start[y_position] - end[y_position]) ** 2)) ** 0.5
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -498,11 +515,10 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    food_locations = dict()
-    for position in foodGrid.asList():
-        food_locations[position] = True
-    # return _euclidean_distance(position, food_locations)
-    return foodGrid.count()
+    distances = list()
+    for food_position in foodGrid.asList():
+        distances.append(_distance(position, food_position))
+    return 0 if not distances else max(distances)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -530,7 +546,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -566,7 +582,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state in self.food.asList()
 
 ##################
 # Mini-contest 1 #
