@@ -35,12 +35,14 @@ project description for details.
 
 Good luck and happy searching!
 """
-from game import Directions
-from game import Agent
-from game import Actions
-import util
 import time
+
 import search
+import util
+from game import Actions
+from game import Agent
+from game import Directions
+
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -322,14 +324,11 @@ class CornersProblem(search.SearchProblem):
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
         return CornersProblemState(self.startingPosition, self.has_food)
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        # return self.food_eaten >= 4 and not any(self.has_food.values())
         return state.is_goal()
 
     def getSuccessors(self, state):
@@ -343,10 +342,6 @@ class CornersProblem(search.SearchProblem):
          required to get there, and 'stepCost' is the incremental
          cost of expanding to that successor
         """
-
-        # if state.pacman_position in state.has_food.keys():
-        #     state.has_food[state.pacman_position] = False
-        #     self.food_eaten += 1
 
         successors = []
         cost = 1.0
@@ -401,8 +396,17 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    # return 1 # Default to trivial solution
-    return state.remaining_count
+    return _euclidean_distance(state.pacman_position, state.has_food)
+
+def _euclidean_distance(pacman_position, has_food):
+    px, py = pacman_position
+    distances = list()
+    for fx, fy in has_food:
+        if has_food[(fx, fy)]:
+            distances.append((((px - fx) ** 2 + (py - fy) ** 2) ** 0.5))
+    if len(distances) == 0:
+        return 0
+    return min(distances)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
