@@ -267,14 +267,12 @@ class CornersProblemState:
         import copy
         self.pacman_position = pacman_position
         self.has_food = copy.deepcopy(has_food)
+        if self.pacman_position in self.has_food.keys():
+            self.has_food[self.pacman_position] = False
+        self.remaining_count = sum(self.has_food.values())
 
     def is_goal(self):
         return not any(self.has_food.values())
-
-    def move_to(self, new_position):
-        self.pacman_position = new_position
-        if self.pacman_position in self.has_food.keys():
-            self.has_food[self.pacman_position] = False
 
     def __hash__(self):
         items = self.has_food.items()
@@ -366,8 +364,7 @@ class CornersProblem(search.SearchProblem):
             new_x, new_y = new_position = int(x + dx), int(y + dy)
 
             if not self.walls[new_x][new_y]:
-                successor = CornersProblemState(state.pacman_position, state.has_food)
-                successor.move_to(new_position)
+                successor = CornersProblemState(new_position, state.has_food)
                 successors.append((successor, Actions.vectorToDirection(vector), cost))
 
         self._expanded += 1
@@ -404,7 +401,8 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # return 1 # Default to trivial solution
+    return state.remaining_count
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
